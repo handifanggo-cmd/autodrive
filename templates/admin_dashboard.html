@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AutoDrive</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
+                        url('https://images.unsplash.com/photo-1614200187524-dc4b892acf16?q=80&w=2071&auto=format&fit=crop');
+            background-size: cover; background-attachment: fixed; font-family: 'Poppins', sans-serif; color: white; margin: 0;
+        }
+        .sidebar { height: 100vh; background: rgba(0, 0, 0, 0.9) !important; backdrop-filter: blur(15px); position: fixed; width: 240px; z-index: 1000; border-right: 1px solid rgba(255,255,255,0.1); }
+        .main-content { margin-left: 240px; padding: 30px; position: relative; z-index: 10; }
+        .glass-card { background: rgba(255, 255, 255, 0.1) !important; backdrop-filter: blur(20px); border-radius: 20px; padding: 25px; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .table { color: white !important; }
+        .table td, .table th { background: transparent !important; color: white !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; }
+        .img-preview { width: 100px; height: 60px; object-fit: cover; border-radius: 10px; }
+        
+        /* FIX: Z-Index agar tombol dan modal bisa diklik */
+        .btn { position: relative; z-index: 1050 !important; cursor: pointer !important; }
+        .modal { color: #333; z-index: 2000 !important; }
+        .modal-backdrop { z-index: 1040 !important; }
+        
+        .badge { font-size: 0.85rem; padding: 8px 12px; }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="text-center px-3 mt-4">
+            <h3 class="fw-bold text-primary">AUTO<span class="text-white">DRIVE</span></h3>
+            <p class="small text-white-50">Admin Panel</p>
+            <hr class="border-secondary">
+            <ul class="nav flex-column text-start">
+                <li class="nav-item"><a class="nav-link active text-white fw-bold" href="/admin/dashboard">Manajemen Mobil</a></li>
+                <li class="nav-item"><a class="nav-link text-white-50" href="/admin/laporan">Laporan & Stok</a></li>
+                <hr class="border-secondary">
+                <li class="nav-item"><a class="nav-link text-danger fw-bold" href="/logout">Keluar</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">MANAJEMEN MOBIL</h2>
+            <button class="btn btn-primary rounded-pill px-4 shadow" data-bs-toggle="modal" data-bs-target="#modalTambah">➕ Tambah Mobil</button>
+        </div>
+
+        <div class="glass-card shadow-lg">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Identitas Mobil</th>
+                        <th>Warna Bawaan</th>
+                        <th>Harga/Hari</th>
+                        <th class="text-center">Sisa Stok</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mobil in daftar_mobil %}
+                    <tr>
+                        <td><img src="{{ mobil.foto }}" class="img-preview shadow-sm border border-secondary"></td>
+                        <td>
+                            <strong>{{ mobil.nama_mobil }}</strong><br>
+                            <small class="text-white-50">{{ mobil.merk }}</small>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill border" 
+                                  style="background-color: {{ 'white' if mobil.warna|lower == 'putih' else mobil.warna|lower }}; 
+                                        color: {{ 'black' if mobil.warna|lower == 'putih' or mobil.warna|lower == 'kuning' else 'white' }};">
+                                {{ mobil.warna }}
+                            </span>
+                        </td>
+                        <td class="text-info fw-bold">Rp {{ mobil.harga_sewa | format_rupiah }}</td>
+                        <td class="text-center">
+                            <span class="badge {% if mobil.stok > 0 %}bg-success{% else %}bg-danger{% endif %} rounded-pill shadow-sm">
+                                {{ mobil.stok }} Unit
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-warning rounded-pill px-3 me-1 fw-bold" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalEdit{{ mobil.id_mobil }}">
+                                Edit
+                            </button>
+                            <a href="/admin/mobil/hapus/{{ mobil.id_mobil }}" class="btn btn-sm btn-danger rounded-pill px-3 fw-bold" onclick="return confirm('Hapus armada ini?')">Hapus</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="/mobil/tambah" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Tambah Armada Baru</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" name="nama" class="form-control mb-2" placeholder="Nama Mobil" required>
+                        <input type="text" name="merk" class="form-control mb-2" placeholder="Merk" required>
+                        <input type="text" name="warna" class="form-control mb-2" placeholder="Warna" required>
+                        <input type="number" name="harga" class="form-control mb-2" placeholder="Harga Sewa" required>
+                        <input type="number" name="stok" class="form-control mb-2" placeholder="Stok" required>
+                        <input type="text" name="url_foto" class="form-control mb-2" placeholder="URL Foto" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary w-100">Simpan Armada</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% for mobil in daftar_mobil %}
+    <div class="modal fade" id="modalEdit{{ mobil.id_mobil }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form action="/mobil/edit/{{ mobil.id_mobil }}" method="POST">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Edit {{ mobil.nama_mobil }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" name="nama" class="form-control mb-2" value="{{ mobil.nama_mobil }}" required>
+                        <input type="text" name="warna" class="form-control mb-2" value="{{ mobil.warna }}" required>
+                        <input type="number" name="harga" class="form-control mb-2" value="{{ mobil.harga_sewa }}" required>
+                        <input type="number" name="stok" class="form-control mb-2" value="{{ mobil.stok }}" required>
+                        <input type="text" name="url_foto" class="form-control mb-2" value="{{ mobil.foto }}" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-warning w-100">Simpan Perubahan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

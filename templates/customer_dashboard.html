@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoDrive - Katalog Mobil</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
+                        url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+        }
+
+        .navbar { background: rgba(26, 30, 33, 0.95) !important; backdrop-filter: blur(10px); z-index: 1050; }
+
+        .banner-gold-container {
+            background: linear-gradient(45deg, rgba(40, 42, 44, 0.9), rgba(139, 164, 170, 0.9));
+            border: 1px solid rgba(175, 156, 156, 0.2);
+            max-width: 900px;
+            margin: 20px auto;
+            backdrop-filter: blur(5px);
+        }
+        
+        .card-promo { border-radius: 15px; background: rgba(255, 255, 255, 0.9); }
+        
+        .card-mobil { 
+            transition: transform 0.3s ease; 
+            border-radius: 20px; 
+            border: none; 
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+        }
+        .card-mobil:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(224, 221, 221, 0.6); }
+        .img-mobil { height: 200px; object-fit: cover; border-radius: 15px 15px 0 0; }
+
+        .search-container { max-width: 600px; margin: 0 auto 30px auto; }
+        .search-input-group { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark px-4 py-3 sticky-top shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="/">TUAN MUDA</a>
+            <div class="d-flex align-items-center">
+                <span class="text-white me-3 small">Halo, <strong>{{ session['username'] }}</strong></span>
+                <a href="/logout" class="btn btn-outline-danger btn-sm rounded-pill px-4">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container"> 
+        <div class="banner-gold-container text-white p-4 rounded-5 shadow-lg text-center">
+            <h2 class="fw-bold mb-2">Jadi Member Gold!</h2>
+            <p class="small mb-3 text-white-50">Dapatkan akses eksklusif mobil mewah dengan potongan harga khusus.</p>
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card card-promo border-0 shadow-sm p-3">
+                        <div class="row align-items-center text-dark text-start">
+                            <div class="col-5 border-end text-center">
+                                <span class="badge bg-warning text-dark mb-1 small fw-bold">PROMO</span>
+                                <h3 class="text-primary fw-bold mb-0">15% OFF</h3>
+                            </div>
+                            <div class="col-7 ps-3">
+                                <ul class="list-unstyled mb-0" style="font-size: 0.75rem;">
+                                    <li>✅ Booking Prioritas</li>
+                                    <li>✅ Asuransi Premium</li>
+                                    <li>✅ Gratis Cuci Mobil</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container py-4">
+        <div class="search-container text-center">
+            <h3 class="fw-bold mb-3">Cari Mobil Favoritmu</h3>
+            <form action="/customer/dashboard" method="GET" class="d-flex search-input-group rounded-pill overflow-hidden p-1 shadow">
+                <input type="text" name="search" class="form-control border-0 bg-transparent text-white px-4 py-2" placeholder="Masukkan merk atau nama mobil..." value="{{ request.args.get('search', '') }}" style="outline: none;">
+                <button type="submit" class="btn btn-primary rounded-pill px-4">Cari</button>
+            </form>
+        </div>
+
+        <h2 class="fw-bold mb-4 text-center">PILIH MOBIL TERBAIK UNTUK PERJALANAN ANDA</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show rounded-4" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="row g-4 mb-5">
+            {% for mobil in daftar_mobil %}
+            <div class="col-md-4">
+                <div class="card card-mobil shadow-sm h-100 p-2">
+                    <img src="{{ mobil.foto }}" class="img-mobil" onerror="this.src='https://placehold.co/600x400?text=Mobil+AutoDrive'">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-1">{{ mobil.nama_mobil }}</h5>
+                        <p class="text-muted small mb-2">{{ mobil.merk }}</p>
+                        <p class="text-primary fw-bold fs-5 mb-3">Rp {{ mobil.harga_sewa | format_rupiah }} <small class="text-muted">/ hari</small></p>
+                        
+                        <div class="mb-3">
+                            <span class="badge {{ 'bg-success' if mobil.stok > 0 else 'bg-danger' }} rounded-pill px-3 py-2">
+                                {% if mobil.stok > 0 %}
+                                    Sisa: {{ mobil.stok }} Unit
+                                {% else %}
+                                    Stok Habis
+                                {% endif %}
+                            </span>
+                        </div>
+
+                        {% if mobil.stok > 0 %}
+                            <button class="btn btn-primary w-100 fw-bold rounded-pill py-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalSewa{{ mobil.id_mobil }}">Sewa Sekarang</button>
+                        {% else %}
+                            <button class="btn btn-secondary w-100 rounded-pill fw-bold" disabled>Unit Tidak Tersedia</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="modalSewa{{ mobil.id_mobil }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow-lg text-dark" style="border-radius: 20px;">
+                        <div class="modal-header bg-dark text-white" style="border-radius: 20px 20px 0 0;">
+                            <h5 class="modal-title fw-bold">Booking {{ mobil.nama_mobil }}</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="/sewa/proses/{{ mobil.id_mobil }}" method="POST">
+                            <div class="modal-body p-4 text-start">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Nama Penyewa</label>
+                                    <input type="text" name="nama_penyewa" class="form-control" placeholder="Nama sesuai KTP" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Nomor WhatsApp</label>
+                                    <input type="text" name="no_telp" class="form-control" placeholder="Contoh: 08123456789" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold small">Pilih Warna Tersedia</label>
+                                    <select name="warna_pilihan" class="form-control" required>
+                                        <option value="" disabled selected>-- Pilih Warna --</option>
+                                        <option value="Hitam">Hitam</option>
+                                        <option value="Putih">Putih</option>
+                                        <option value="Silver">Silver</option>
+                                        <option value="Merah">Merah</option>
+                                        <option value="Biru">Biru</option>
+                                        <option value="Abu-abu">Abu-abu</option>
+                                    </select>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold small">Tgl Pinjam</label>
+                                        <input type="date" name="tgl_pinjam" class="form-control" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label fw-bold small">Tgl Kembali</label>
+                                        <input type="date" name="tgl_kembali" class="form-control" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-0 p-4 pt-0">
+                                <button type="submit" class="btn btn-primary w-100 fw-bold py-2 rounded-pill shadow">KONFIRMASI SEWA</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

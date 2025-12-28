@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PORTAL - AutoDrive Rental Mobil</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), 
+                        url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        .portal-container {
+            text-align: center;
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+        }
+
+        .main-title {
+            color: rgb(221, 212, 212);
+            font-weight: 800;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .sub-title {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 50px;
+            font-weight: 300;
+            font-size: 1.1rem;
+        }
+
+        .portal-card {
+            background: rgba(136, 131, 131, 0.98);
+            border: none;
+            border-radius: 25px;
+            padding: 50px 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            height: 100%;
+            box-shadow: 0 15px 35px rgba(182, 33, 33, 0.4);
+            text-decoration: none !important;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-15px);
+            background: #585656;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .icon-box {
+            font-size: 80px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .portal-card:hover .icon-box {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .btn-custom {
+            padding: 14px 30px;
+            font-weight: 700;
+            border-radius: 12px;
+            width: 100%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .btn-customer { 
+            background: linear-gradient(45deg, #d9dde4, #00d2ff); 
+            color: rgb(15, 14, 14); 
+        }
+        
+        .btn-admin { 
+            background: linear-gradient(45deg, #115eac, #0b0c0c); 
+            color: rgb(12, 11, 11); 
+        }
+
+        .card-text {
+            color: #0e0f0f;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container portal-container">
+        <h1 class="main-title">RENTAL MOBIL TUAN MUDA</h1>
+        <p class="sub-title">Solusi Transportasi Berkelas untuk Setiap Perjalanan liburan Anda</p>
+        
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <a href="/login/customer" class="portal-card">
+                    <div class="icon-box"></div>
+                    <h3 class="fw-bold text-dark mb-2">Customer</h3>
+                    <p class="card-text">Mau sewa mobil mewah dengan booking instan?</p>
+                    <button class="btn btn-custom btn-customer shadow-sm">Login Customer</button>
+                </a>
+            </div>
+
+            <div class="col-md-5 col-lg-4">
+                <a href="/login/admin" class="portal-card">
+                    <div class="icon-box"></div>
+                    <h3 class="fw-bold text-dark mb-2">Administrator</h3>
+                    <p class="card-text">Kelola mobil, stok, dan pantau laporan transaksi pelanggan.</p>
+                    <button class="btn btn-custom btn-admin shadow-sm">Login Admin</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
