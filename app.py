@@ -5,6 +5,8 @@ import os
 app = Flask(__name__)
 app.secret_key = "autodrive_pro_key"
 
+app = app 
+
 @app.template_filter('format_rupiah')
 def format_rupiah(value):
     return f"{value:,.0f}".replace(",", ".")
@@ -23,19 +25,15 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
         confirm_pw = request.form.get("confirm_password")
-
         if password != confirm_pw:
             flash("Password tidak cocok!", "danger")
             return redirect(url_for("register"))
-
         result = User.register(username, password) 
-        
         if result is True:
             flash("Registrasi Berhasil! Silakan Login.", "success")
             return redirect(url_for("login_customer"))
         else:
             flash(f"Gagal: {result}", "danger")
-            
     return render_template("register.html")
 
 @app.route("/login/admin", methods=["GET", "POST"])
@@ -92,7 +90,6 @@ def admin_laporan():
             return f"Detail Error Database: {e}"
     return "Gagal koneksi ke database"
 
-
 @app.route("/admin/sewa/selesai/<int:id_sewa>", methods=["POST"])
 def admin_selesai_sewa(id_sewa):
     if session.get('role') != 'admin': return redirect(url_for('login_admin'))
@@ -113,7 +110,6 @@ def hapus_laporan(id_sewa):
         if res:
             id_mobil, status = res
             cur.execute("DELETE FROM sewa WHERE id_sewa = %s", (id_sewa,))
-
             if status == 'Proses':
                 cur.execute("UPDATE mobil SET stok = stok + 1 WHERE id_mobil = %s", (id_mobil,))
             conn.commit()
@@ -130,7 +126,6 @@ def tambah_mobil():
     stok = request.form.get('stok')
     url_foto = request.form.get('url_foto')
     warna = request.form.get('warna')
-    
     conn = get_db_connection()
     if conn:
         cur = conn.cursor()
@@ -147,7 +142,6 @@ def edit_mobil(id_mobil):
     stok = request.form.get('stok')
     url_foto = request.form.get('url_foto')
     warna = request.form.get('warna')
-    
     conn = get_db_connection()
     if conn:
         cur = conn.cursor()
@@ -165,13 +159,11 @@ def customer_dashboard():
 def proses_sewa(id_mobil):
     if session.get('role') != 'customer': 
         return redirect(url_for('login_customer'))
-    
     nama = request.form.get('nama_penyewa')
     telp = request.form.get('no_telp')
     warna = request.form.get('warna_pilihan')
     tgl_p = request.form.get('tgl_pinjam')
     tgl_k = request.form.get('tgl_kembali')
-    
     if Sewa.create(id_mobil, nama, telp, tgl_p, tgl_k, warna):
         flash(f'Booking Mobil Warna {warna} Berhasil!', 'success')
         return redirect(url_for('customer_dashboard'))
@@ -180,5 +172,4 @@ def proses_sewa(id_mobil):
         return redirect(url_for('customer_dashboard'))
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run()
